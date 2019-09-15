@@ -1,0 +1,17 @@
+项目结构是如下
+common 为最上一层，里面封装了所有的抽象方法以及功能。serviceFaced为服务提供者的接口，serviceimpl为服务实现者，client为服务调用者
+
+client与service平级  client可以获取到接口类，但是获取不到接口实现类
+
+本次使用的是socket stream流来进行访问，将访问所需要传输的对象属性（类名 方法名 参数）封装为context
+
+服务端监听消息(accept 阻塞获取 已增加CachePool用于处理阻塞问题，后续会改成NIO)，客户端发送消息，以网络IO流的方式输出（定义地址 域名）
+反射调用服务端的ServiceImpl 最后将结果返回客户端
+
+serviceImpl的获取根据注解来定义，交于spring容器管理。spring容器在启动时 扫描相关包，将接口与对应的实现放置map中
+在客户端请求时，组装rpcContext，服务端解析rpcContext从中拼接key获取实现类
+
+PS 如果不在注解中 增加版本号 对于多个实现，一个接口 会根据Spring的扫描顺序覆盖
+    如果有多个实现类 请增加版本号
+
+    下次更新：NIO   通讯框架Netty(之前工作用netty底层的序列化kayo 不支持复杂数据传输)
